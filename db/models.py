@@ -1,13 +1,8 @@
-from enum import Enum
 from db.database import Base
+from enums import Unit
 from sqlalchemy import ForeignKey, String, Text, CheckConstraint, UniqueConstraint
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-class Unit(str, Enum):
-    g = "g"
-    ml = "ml"
-    pcs = "pcs"
 
 class Author(Base):
     __tablename__ = "author"
