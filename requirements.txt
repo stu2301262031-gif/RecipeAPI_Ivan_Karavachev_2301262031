@@ -2,3 +2,4 @@ fastapi[standard]==0.165.0
 SQLAlchemy==2.1.9
 alembic==1.20.1
 email-validator==2.4.0
+pytest==9.2.0
