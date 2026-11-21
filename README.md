@@ -19,7 +19,10 @@ pip install -r requirements.txt
 # 3. Създаване на базата данни чрез миграциите
 alembic upgrade head
 
-# 4. Стартиране на сървъра
+# 4. (по желание) Примерни данни – автори, категории, съставки и рецепти
+python initialize_database.py
+
+# 5. Стартиране на сървъра
 python main.py                  # или: fastapi dev main.py
 ```
 
@@ -40,6 +43,7 @@ models/models.py        Pydantic модели за API заявките и от�
 services/               бизнес логика и заявки към базата данни
 routers/                FastAPI ендпойнти (контролери)
 alembic/versions/       миграции
+initialize_database.py  примерни данни за тестване в Swagger
 ```
 
 Router-ите получават сесията към базата и съответния service чрез `Depends(...)`.
