@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
+from enums import Unit
 
 #required text fields can not be empty or contain only spaces.
 #the spaces at the beginning and at the end are removed before the value is stored
@@ -104,3 +105,35 @@ class CreateRecipe(BaseModel):
 
 class UpdateRecipe(CreateRecipe):
     pass
+
+#----------------------------------- Recipe ingredients -----------------------------------
+
+#an ingredient of a recipe together with its quantity and unit
+class RecipeIngredient(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    ingredient: Ingredient
+    quantity: float
+    unit: Unit
+
+class AddRecipeIngredient(BaseModel):
+    ingredient_id: int
+    quantity: float = Field(gt=0, allow_inf_nan=False)
+    unit: Unit
+
+class UpdateRecipeIngredient(BaseModel):
+    quantity: float = Field(gt=0, allow_inf_nan=False)
+    unit: Unit
+
+#recipe with quantities recalculated for the requested number of servings
+#(the data in the database is not changed)
+class ScaledRecipe(BaseModel):
+    id: int
+    title: str
+    instructions: str
+    prep_time_minutes: int
+    author_id: int
+    category_id: int | None
+    original_servings: int
+    servings: int
+    ingredients: list[RecipeIngredient]

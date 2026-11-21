@@ -42,6 +42,12 @@ class AuthorService:
         db_session.refresh(author)
         return author
 
+    #404 if the author does not exist, empty list if the author has no recipes
+    def get_author_recipes(self, id: int, db_session: Session) -> list[Recipe]:
+        self._get(id, db_session)
+        return db_session.scalars(
+            select(Recipe).where(Recipe.author_id == id).order_by(Recipe.id)).all()
+
     def delete_author(self, id: int, db_session: Session):
         author = self._get(id, db_session)
         recipes_count = db_session.scalar(

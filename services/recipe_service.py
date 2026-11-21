@@ -1,7 +1,7 @@
 from exceptions import NotFound, DuplicationError
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from db.models import Recipe
+from db.models import Recipe, RecipeIngredient
 from services.author_service import AuthorService
 from services.category_service import CategoryService
 
@@ -80,6 +80,36 @@ class RecipeService:
         recipe = self._get(id, db_session)
         db_session.delete(recipe)
         db_session.commit()
+
+    #returns the recipe with quantities recalculated for the requested number of servings.
+    #the result is a new dictionary - the ORM objects are not changed,
+    #so nothing is written to the database
+    def get_scaled_recipe(self, id: int, servings: int, db_session: Session) -> dict:
+        recipe = self._get(id, db_session)
+        recipe_ingredients = db_session.scalars(
+            select(RecipeIngredient)
+            .where(RecipeIngredient.recipe_id == id)
+            .order_by(RecipeIngredient.id)).all()
+
+        factor = servings / recipe.servings
+        return {
+            "id": recipe.id,
+            "title": recipe.title,
+            "instructions": recipe.instructions,
+            "prep_time_minutes": recipe.prep_time_minutes,
+            "author_id": recipe.author_id,
+            "category_id": recipe.category_id,
+            "original_servings": recipe.servings,
+            "servings": servings,
+            "ingredients": [
+                {
+                    "ingredient": recipe_ingredient.ingredient,
+                    "quantity": round(recipe_ingredient.quantity * factor, 2),
+                    "unit": recipe_ingredient.unit,
+                }
+                for recipe_ingredient in recipe_ingredients
+            ],
+        }
 
 def get_recipe_service() -> RecipeService:
     return RecipeService()
