@@ -1,0 +1,26 @@
+from fastapi import FastAPI, status, Request
+from fastapi.responses import JSONResponse
+from exceptions import AppError, NotFound, DuplicationError, ConflictError
+import uvicorn
+
+#the database schema is created and updated only with Alembic migrations:
+#alembic upgrade head
+app = FastAPI(title="Recipe Catalog API")
+
+@app.exception_handler(AppError)
+def handle_errors(request: Request, exc: AppError):
+    if type(exc) is NotFound:
+        status_code = status.HTTP_404_NOT_FOUND
+    elif type(exc) in (DuplicationError, ConflictError):
+        status_code = status.HTTP_409_CONFLICT
+    else:
+        status_code = status.HTTP_400_BAD_REQUEST
+    return JSONResponse(status_code=status_code,
+                        content={"error_message": exc.message})
+
+@app.get("/health")
+def health_check():
+    return {"health": "running"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
