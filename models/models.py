@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
-from enums import Unit
+from enums import Unit, Difficulty
 
 #required text fields can not be empty or contain only spaces.
 #the spaces at the beginning and at the end are removed before the value is stored
@@ -86,6 +86,7 @@ class Recipe(BaseModel):
     instructions: str
     prep_time_minutes: int
     servings: int
+    difficulty: Difficulty
     author_id: int
     category_id: int | None
 
@@ -95,6 +96,7 @@ class CreateRecipe(BaseModel):
     #strict=True - only whole numbers are accepted (not "30", 30.5 or true)
     prep_time_minutes: int = Field(gt=0, strict=True)
     servings: int = Field(gt=0, strict=True)
+    difficulty: Difficulty
     author_id: int
     category_id: int | None = None
 
@@ -132,6 +134,7 @@ class ScaledRecipe(BaseModel):
     title: str
     instructions: str
     prep_time_minutes: int
+    difficulty: Difficulty
     author_id: int
     category_id: int | None
     original_servings: int
