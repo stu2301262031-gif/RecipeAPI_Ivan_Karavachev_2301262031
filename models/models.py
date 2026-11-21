@@ -74,3 +74,33 @@ class CreateIngredient(BaseModel):
 
 class UpdateIngredient(CreateIngredient):
     pass
+
+#----------------------------------- Recipe -----------------------------------
+
+class Recipe(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    instructions: str
+    prep_time_minutes: int
+    servings: int
+    author_id: int
+    category_id: int | None
+
+class CreateRecipe(BaseModel):
+    title: str = Field(max_length=200)
+    instructions: str
+    #strict=True - only whole numbers are accepted (not "30", 30.5 or true)
+    prep_time_minutes: int = Field(gt=0, strict=True)
+    servings: int = Field(gt=0, strict=True)
+    author_id: int
+    category_id: int | None = None
+
+    @field_validator("title", "instructions")
+    @classmethod
+    def validate_text(cls, value):
+        return validate_not_blank(value)
+
+class UpdateRecipe(CreateRecipe):
+    pass

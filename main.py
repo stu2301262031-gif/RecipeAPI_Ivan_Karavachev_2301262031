@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
-from routers import authors_router, categories_router, ingredients_router
+from routers import authors_router, categories_router, ingredients_router, recipes_router
 from exceptions import AppError, NotFound, DuplicationError, ConflictError
 import uvicorn
 
@@ -12,6 +12,7 @@ app = FastAPI(title="Recipe Catalog API")
 app.include_router(authors_router.router)
 app.include_router(categories_router.router)
 app.include_router(ingredients_router.router)
+app.include_router(recipes_router.router)
 
 @app.exception_handler(AppError)
 def handle_errors(request: Request, exc: AppError):
